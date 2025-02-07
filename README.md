@@ -1,4 +1,4 @@
-# Device Management ⚡️
+# Event Surcing in Golang ⚡️
 
 ## Let's Run the Application 
 
