@@ -1,4 +1,4 @@
-# Event Surcing in Golang ⚡️
+# Event Sourcing in Golang ⚡️
 
 ## Let's Run the Application 
 
@@ -16,7 +16,7 @@ make test
 ```
 
 ### Rest Api
-Payload: DeviceManagement.postman_collection.json
+Payload: EventSourcing.postman_collection.json
 
 ### Domain Model
 ![Image](./assets/event-modeling.png?raw=true)
