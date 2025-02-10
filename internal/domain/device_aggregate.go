@@ -3,6 +3,7 @@ package domain
 import (
 	"errors"
 
+	"github.com/google/uuid"
 	"github.com/renatocosta55sp/device_management/internal/domain/commands"
 	"github.com/renatocosta55sp/device_management/internal/events"
 	"github.com/renatocosta55sp/modeling/domain"
@@ -68,6 +69,7 @@ func (d *DeviceAggregate) Add(cmd commands.AddDeviceCommand) (slice.CommandResul
 		Brand:       cmd.Brand,
 	}
 
+	event.SetId(uuid.New())
 	event.SetVersion(d.Version + 1)
 
 	d.UncommittedEvents = append(d.UncommittedEvents, event)
@@ -91,6 +93,7 @@ func (d *DeviceAggregate) Remove(cmd commands.RemoveDeviceCommand) (slice.Comman
 		AggregateId: cmd.AggregateID,
 	}
 
+	event.SetId(uuid.New())
 	event.SetVersion(d.Version + 1)
 
 	d.UncommittedEvents = append(d.UncommittedEvents, event)

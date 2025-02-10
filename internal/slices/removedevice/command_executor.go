@@ -12,12 +12,17 @@ import (
 
 type CommandExecutor struct {
 	eventStore eventstore.EventStore
+	snapshot   eventstore.SnapshotStore
 }
 
 func (c CommandExecutor) Send(ctx context.Context, cmd commands.RemoveDeviceCommand) (commandResult slice.CommandResult, device *domain.DeviceAggregate, err error) {
 	//Get the current state
-	stream, err := c.eventStore.ReadStream(ctx, cmd.AggregateID.String())
+	version, err := c.snapshot.ReadSnapshot(ctx, cmd.AggregateID.String())
+	if err != nil {
+		return commandResult, nil, err
+	}
 
+	stream, err := c.eventStore.ReadStream(ctx, cmd.AggregateID.String(), version)
 	if err != nil {
 		return commandResult, nil, err
 	}
@@ -31,7 +36,7 @@ func (c CommandExecutor) Send(ctx context.Context, cmd commands.RemoveDeviceComm
 
 	dispatcher := bus.NewEventDispatcher()
 
-	deviceReadModel := DeviceReadModel{deviceAggregate: deviceAggregate, eventStore: c.eventStore, ctx: ctx}
+	deviceReadModel := DeviceReadModel{deviceAggregate: deviceAggregate, eventStore: c.eventStore, snapshot: c.snapshot, ctx: ctx}
 	bus.RegisterHandler(dispatcher, deviceReadModel)
 
 	if err := dispatcher.DispatchUncommittedEvents(deviceAggregate.UncommittedEvents); err != nil {

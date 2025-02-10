@@ -52,6 +52,7 @@ func runAddCommand() {
 
 	_, deviceAggregate, err := CommandExecutor{
 		persistence.NewPersistentEventStore(dbConn, eventRegistry, "public"),
+		persistence.NewPersistentSnapshotEventStore(dbConn, eventRegistry, "public"),
 	}.Send(
 		ctx,
 		commands.AddDeviceCommand{

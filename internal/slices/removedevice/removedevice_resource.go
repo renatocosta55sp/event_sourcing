@@ -60,6 +60,7 @@ func (h HttpServer) RemoveDevice(ctx *gin.Context) {
 
 	commandResult, _, err := CommandExecutor{
 		persistence.NewPersistentEventStore(h.Db, h.DomainEventRegistry, "public"),
+		persistence.NewPersistentSnapshotEventStore(h.Db, h.DomainEventRegistry, "public"),
 	}.Send(
 		ctx,
 		commands.RemoveDeviceCommand{

@@ -3,9 +3,9 @@ package events
 import "github.com/google/uuid"
 
 type DeviceAdded struct {
-	AggregateId uuid.UUID
-	Name, Brand string
-	Version     int
+	Id, AggregateId uuid.UUID
+	Name, Brand     string
+	Version         int
 }
 
 func (e *DeviceAdded) GetName() string {
@@ -13,7 +13,11 @@ func (e *DeviceAdded) GetName() string {
 }
 
 func (e *DeviceAdded) GetId() uuid.UUID {
-	return uuid.New()
+	return e.Id
+}
+
+func (e *DeviceAdded) SetId(id uuid.UUID) {
+	e.Id = id
 }
 
 func (e *DeviceAdded) GetVersion() int {

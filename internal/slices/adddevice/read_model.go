@@ -11,6 +11,7 @@ import (
 type DeviceReadModel struct {
 	deviceAggregate *domain.DeviceAggregate
 	eventStore      eventstore.EventStore
+	snapshot        eventstore.SnapshotStore
 	ctx             context.Context
 }
 
@@ -21,6 +22,12 @@ func (d DeviceReadModel) Handle(event *events.DeviceAdded) error {
 		d.deviceAggregate.UncommittedEvents,
 		d.deviceAggregate.Version); err != nil {
 		return err
+	}
+
+	if eventstore.ShouldTakeSnapshot(&d.deviceAggregate.Aggregate, 5) {
+		if err := d.snapshot.WriteSnapshot(d.ctx, event.AggregateId.String(), event, d.deviceAggregate.Version); err != nil {
+			return err
+		}
 	}
 
 	return nil

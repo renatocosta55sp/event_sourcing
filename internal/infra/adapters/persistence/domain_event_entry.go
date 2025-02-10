@@ -41,10 +41,6 @@ func (p *PersistentEventStore) AppendToStream(ctx context.Context, streamID stri
 		stream = []domain.Event{}
 	}
 
-	/*if currentVersion != aggregateVersion {
-		return eventstore.ErrConcurrencyConflict
-	}*/
-
 	entries := [][]any{}
 	columns := []string{"global_index", "aggregate_identifier", "event_identifier", "sequence_number", "time_stamp", "type", "meta_data", "payload"}
 
@@ -91,9 +87,9 @@ func (p *PersistentEventStore) AppendToStream(ctx context.Context, streamID stri
 
 }
 
-func (p *PersistentEventStore) ReadStream(ctx context.Context, streamID string) ([]domain.Event, error) {
+func (p *PersistentEventStore) ReadStream(ctx context.Context, streamID string, version int) ([]domain.Event, error) {
 
-	rows, err := p.Conn.Query(ctx, "SELECT payload, type from domain_event_entry where aggregate_identifier = $1", streamID)
+	rows, err := p.Conn.Query(ctx, "SELECT payload, type from domain_event_entry where aggregate_identifier = $1 AND sequence_number >= $2", streamID, version)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute query: %w", err)
 	}
