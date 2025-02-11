@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: device_management_postgres
+    container_name: event_sourcing_postgres
     ports:
       - 5432:5432
     restart: always
@@ -14,7 +14,7 @@ services:
     networks:
       - fullstack
   api:
-    container_name: device_management_api
+    container_name: event_sourcing_api
     build: .
     ports:
       - 8080:8080

@@ -18,12 +18,12 @@ import (
 const SnapshotEventTableName = "snapshot_event_entry"
 
 type PersistentSnapshotEventStore struct {
-	Conn          *pgxpool.Pool
+	Conn          *pgxpool.Conn
 	eventRegistry *bus.EventRegistry
 	DBSchema      string
 }
 
-func NewPersistentSnapshotEventStore(conn *pgxpool.Pool, eventRegistry *bus.EventRegistry, dbSchema string) eventstore.SnapshotStore {
+func NewPersistentSnapshotEventStore(conn *pgxpool.Conn, eventRegistry *bus.EventRegistry, dbSchema string) eventstore.SnapshotStore {
 	return &PersistentSnapshotEventStore{
 		Conn:          conn,
 		eventRegistry: eventRegistry,

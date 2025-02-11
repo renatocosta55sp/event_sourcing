@@ -58,9 +58,19 @@ func (h HttpServer) RemoveDevice(ctx *gin.Context) {
 		return
 	}
 
+	conn, err := h.Db.Acquire(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Something went wrong"})
+		return
+	}
+
 	commandResult, _, err := CommandExecutor{
-		persistence.NewPersistentEventStore(h.Db, h.DomainEventRegistry, "public"),
-		persistence.NewPersistentSnapshotEventStore(h.Db, h.DomainEventRegistry, "public"),
+		persistence.NewPersistentEventStore(conn, h.DomainEventRegistry, "public"),
+		persistence.NewPersistentSnapshotEventStore(conn, h.DomainEventRegistry, "public"),
+		persistence.TransactionDb{
+			Ctx:  ctx,
+			Conn: conn,
+		},
 	}.Send(
 		ctx,
 		commands.RemoveDeviceCommand{

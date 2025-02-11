@@ -14,7 +14,7 @@ create table domain_event_entry
     unique (aggregate_identifier, sequence_number)
 );
 
-CREATE INDEX idx_events_aggregate_version ON events (aggregate_id, version);
+CREATE INDEX idx_events_aggregate_version ON domain_event_entry (aggregate_identifier, sequence_number);
 
 create table snapshot_event_entry
 (

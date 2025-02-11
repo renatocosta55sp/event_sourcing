@@ -20,12 +20,12 @@ const DomainEventEntrySeq = "domain_event_entry_seq"
 
 type PersistentEventStore struct {
 	store         map[string][]domain.Event
-	Conn          *pgxpool.Pool
+	Conn          *pgxpool.Conn
 	eventRegistry *bus.EventRegistry
 	DBSchema      string
 }
 
-func NewPersistentEventStore(conn *pgxpool.Pool, eventRegistry *bus.EventRegistry, dbSchema string) eventstore.EventStore {
+func NewPersistentEventStore(conn *pgxpool.Conn, eventRegistry *bus.EventRegistry, dbSchema string) eventstore.EventStore {
 	return &PersistentEventStore{
 		store:         make(map[string][]domain.Event),
 		Conn:          conn,
@@ -54,7 +54,7 @@ func (p *PersistentEventStore) AppendToStream(ctx context.Context, streamID stri
 
 	for _, event := range newEvents {
 
-		globalIndex, err := GetNextVal(context.Background(), p.Conn, DomainEventEntrySeq)
+		globalIndex, err := GetNextVal(ctx, p.Conn, DomainEventEntrySeq)
 		if err != nil {
 			log.Fatalf("Failed to fetch nextval: %v", err)
 		}
