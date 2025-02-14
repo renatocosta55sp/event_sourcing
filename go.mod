@@ -1,4 +1,4 @@
-module github.com/renatocosta55sp/device_management
+module github.com/renatocosta55sp/event_sourcing
 
 go 1.23.0
 

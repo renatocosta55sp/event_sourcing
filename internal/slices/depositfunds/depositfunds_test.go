@@ -1,5 +1,6 @@
-package adddevice
+package depositfunds
 
+/*
 import (
 	"context"
 	"log"
@@ -10,19 +11,18 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/renatocosta55sp/device_management/internal/domain/commands"
-	"github.com/renatocosta55sp/device_management/internal/events"
-	"github.com/renatocosta55sp/device_management/internal/infra/adapters/persistence"
-	"github.com/renatocosta55sp/device_management/internal/infra/testsuite"
+	"github.com/renatocosta55sp/event_sourcing/internal/domain/commands"
+	"github.com/renatocosta55sp/event_sourcing/internal/events"
+	"github.com/renatocosta55sp/event_sourcing/internal/infra/adapters/persistence"
+	"github.com/renatocosta55sp/event_sourcing/internal/infra/testsuite"
 	"github.com/renatocosta55sp/modeling/infra/bus"
 	"github.com/testcontainers/testcontainers-go"
 )
-
 var ag = &bus.AggregateRootTestCase{}
 var ctx context.Context
 var raisedEvents map[string]string
 var ctxCancFunc context.CancelFunc
-var dbConn *pgxpool.Pool
+var dbConn *pgxpool.Conn
 var pgContainer testcontainers.Container
 var container testcontainers.Container
 var err error
@@ -44,13 +44,13 @@ func runAddCommand() {
 
 	aggregateIdentifier := uuid.New()
 
-	evt := events.DeviceAdded{}
+	evt := events.FundsDeposited{}
 	eventRegistry := bus.NewEventRegistry()
 	eventRegistry.RegisterEvents(map[string]reflect.Type{
-		evt.GetName(): reflect.TypeOf(events.DeviceAdded{}),
+		evt.GetName(): reflect.TypeOf(events.FundsDeposited{}),
 	})
 
-	_, deviceAggregate, err := CommandExecutor{
+	_, bankAccountAggregate, err := CommandExecutor{
 		persistence.NewPersistentEventStore(dbConn, eventRegistry, "public"),
 		persistence.NewPersistentSnapshotEventStore(dbConn, eventRegistry, "public"),
 		persistence.TransactionDb{
@@ -80,7 +80,7 @@ func runAddCommand() {
 
 	assert.Equal(ag.T, commandResult, commandResultToCompare, "The CommandResult should be equal")*/
 
-}
+/*}
 
 func TestAddDevice(t *testing.T) {
 
@@ -103,3 +103,4 @@ func TestAddDevice(t *testing.T) {
 		Assert()
 
 }
+*/

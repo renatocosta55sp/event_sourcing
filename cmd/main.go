@@ -7,7 +7,7 @@ import (
 	"syscall"
 
 	"github.com/gin-gonic/gin"
-	"github.com/renatocosta55sp/device_management/internal/infra"
+	"github.com/renatocosta55sp/event_sourcing/internal/infra"
 	"github.com/sirupsen/logrus"
 )
 

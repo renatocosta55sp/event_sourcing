@@ -2,7 +2,7 @@ package commands
 
 import "github.com/google/uuid"
 
-type AddDeviceCommand struct {
+type WithdrawnFundsCommand struct {
 	AggregateID uuid.UUID
-	Name, Brand string
+	Amount      float64
 }

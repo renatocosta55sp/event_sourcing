@@ -1,4 +1,4 @@
-package adddevice
+package depositfunds
 
 import (
 	"net/http"
@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/renatocosta55sp/device_management/internal/domain/commands"
-	"github.com/renatocosta55sp/device_management/internal/infra/adapters/persistence"
+	"github.com/renatocosta55sp/event_sourcing/internal/domain/commands"
+	"github.com/renatocosta55sp/event_sourcing/internal/infra/adapters/persistence"
 	"github.com/renatocosta55sp/modeling/infra/bus"
 	"github.com/sirupsen/logrus"
 )
@@ -19,14 +19,22 @@ type HttpServer struct {
 
 const requestDataKey = "requestData"
 
-type DeviceRequest struct {
-	Name  string `json:"name"  binding:"required"`
-	Brand string `json:"brand"  binding:"required"`
+type BankAccountRequest struct {
+	Id     string
+	Amount float64 `json:"amount"  binding:"required"`
 }
 
 func ValidateRequest(ctx *gin.Context) {
 
-	var requestData DeviceRequest
+	id := ctx.Param("id")
+
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"errorD": "ID parameter is required"})
+		ctx.Abort()
+		return
+	}
+
+	var requestData BankAccountRequest
 
 	if err := ctx.ShouldBindJSON(&requestData); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -34,13 +42,15 @@ func ValidateRequest(ctx *gin.Context) {
 		return
 	}
 
+	requestData.Id = id
+
 	ctx.Set("requestData", requestData)
 
 	ctx.Next()
 
 }
 
-func (h HttpServer) AddDevice(ctx *gin.Context) {
+func (h HttpServer) DepositFunds(ctx *gin.Context) {
 
 	requestData, exists := ctx.Get(requestDataKey)
 	if !exists {
@@ -48,7 +58,13 @@ func (h HttpServer) AddDevice(ctx *gin.Context) {
 		return
 	}
 
-	data := requestData.(DeviceRequest)
+	data := requestData.(BankAccountRequest)
+	aggregateIdentifier, err := uuid.Parse(data.Id)
+
+	if err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
+	}
 
 	conn, err := h.Db.Acquire(ctx)
 	if err != nil {
@@ -65,15 +81,14 @@ func (h HttpServer) AddDevice(ctx *gin.Context) {
 		},
 	}.Send(
 		ctx,
-		commands.AddDeviceCommand{
-			AggregateID: uuid.New(),
-			Name:        data.Name,
-			Brand:       data.Brand,
+		commands.DepositFundsCommand{
+			AggregateID: aggregateIdentifier,
+			Amount:      data.Amount,
 		},
 	)
 
 	if err != nil {
-		logrus.WithError(err).Error("failed to validate device on command creation")
+		logrus.WithError(err).Error("failed to validate bank account on deposit funds command")
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
 	}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/renatocosta55sp/device_management/internal/infra"
+	"github.com/renatocosta55sp/event_sourcing/internal/infra"
 	"github.com/sirupsen/logrus"
 )
 
