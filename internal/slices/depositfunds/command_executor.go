@@ -2,7 +2,6 @@ package depositfunds
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/renatocosta55sp/event_sourcing/internal/domain"
 	"github.com/renatocosta55sp/event_sourcing/internal/domain/commands"
@@ -26,7 +25,7 @@ func (c CommandExecutor) Send(ctx context.Context, cmd commands.DepositFundsComm
 		if err != nil {
 			return err
 		}
-		fmt.Println("version", version)
+
 		stream, err := c.eventStore.ReadStream(ctx, cmd.AggregateID.String(), version)
 
 		if err != nil {
